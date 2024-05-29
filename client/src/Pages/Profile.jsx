@@ -2,7 +2,7 @@ import {useRef, useState,useEffect} from 'react';
 import {useSelector} from 'react-redux'
 import{
    getDownloadURL,
-   getStorage, 
+   getStorage,  
    ref, 
    uploadBytesResumable
   } from 'firebase/storage';
@@ -21,6 +21,8 @@ export default function Profile() {
   const [fileUploadError,setFileUploadError]=useState(false);
   const [formData,setFormData]=useState({});
   const [updateSuccess,setUpdateSuccess]=useState(false);
+  const [showListingError,setShowListingError]=useState(false)
+  const [userListings, SetUserListings]=useState([])
   const dispatch = useDispatch();
 
 
@@ -133,6 +135,23 @@ export default function Profile() {
       }
 
 
+      const handleShowListings = async ()=>{
+        try{
+          setShowListingError(false)
+          const res = await fetch(`/api/user/listings/${currentUser._id}`);
+          const data = await res.json();
+          if(data.success===false){
+            setShowListingError(true);
+            return;
+          }
+          SetUserListings(data);
+
+        }catch(error){
+          setShowListingError(true);
+        }
+      }
+
+
 
 
 
@@ -206,6 +225,39 @@ export default function Profile() {
       </div>
        <p className='text-red-700 mt-5'> {error?error:''}</p>
        <p className='text-green-700 mt-5'>{updateSuccess? 'User is Updated successfully!':""}</p>
+       <button onClick={handleShowListings} className='text-green-700 w-full'>
+        Show Listings
+       </button>
+       <p className='text-red-700 mt-5'> {showListingError?'Error showing listing':''}</p>
+
+
+       {userListings && userListings.length > 0 &&
+       <div className='flex flex-col gap-4'>
+        <h1 className='text-center mt-7 text-2xl font-semibold'>
+           Your Listings
+        </h1>
+         {userListings.map((listing)=>(
+        <div key={listing._id} className='border rounded-lg p-3 flex justify-between items-center gap-4' >
+          <Link to={`/listing/${listing._id}`}>
+            <img src={listing.imageUrls[0]} alt="listing cover " className='h-16 w-18 onjet-contain ' />
+          
+          </Link>
+          <Link className='text-slate-700 font-semibold  hover:underline truncate flex-1' to={`/listing/${listing._id}`}>
+            <p >{listing.name}</p>
+          </Link>
+
+          <div className='flex flex-col item'>
+            <button className='text-red-700 uppercase'>Delete</button>
+            <button className='text-green-700 uppercase'>Edit</button>
+
+
+          </div>
+      
+        </div>
+        ))}
+    
+       </div>    }
+       
 
     </div>
   )
