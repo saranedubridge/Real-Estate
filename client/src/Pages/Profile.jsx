@@ -163,7 +163,7 @@ export default function Profile() {
             return;
           }
     
-          setUserListings((prev) =>
+          SetUserListings((prev) =>
             prev.filter((listing) => listing._id !== listingId)
           );
         } catch (error) {
