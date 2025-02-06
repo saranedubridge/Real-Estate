@@ -6,7 +6,7 @@ import userRouter from './routes/user.route.js';
 import listingRouter from './routes/listing.route.js'
 import cookieParser from 'cookie-parser';
 import path from 'path'
-dotenv.config();
+// dotenv.config();
 
 mongoose.connect(process.env.MONGOURI).then(()=>{
     console.log("Connected to MongoDB!")
